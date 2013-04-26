@@ -1,9 +1,9 @@
 from django.core import serializers
 from django.http.response import HttpResponse
+from django.shortcuts import redirect
 from django.utils import simplejson
 from main.forms import PersonForm
 from main.models import Person
-import json
 
 def team(request, team_name):
     people =  Person.objects.filter(team=team_name)
@@ -20,14 +20,11 @@ def simple_data(request):
     return data
 
 def add_player(request):
-    form = PersonForm(request.POST) # A form bound to the POST data
+    form = PersonForm(request.POST) 
         
     if (form.is_valid()):
         person_instance = form.save()
-        data = serializers.serialize('json', [person_instance,])
-        struct = json.loads(data)
-        data = json.dumps(struct[0])
-        return HttpResponse(data, mimetype='application/json')
+        return redirect('main:team', person_instance.team,)
 
     errors = {'errors' : form.errors}
 

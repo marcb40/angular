@@ -9,23 +9,53 @@
 <!-- <script src="js/angular.min.js"></script> -->
 <script src="js/angular.js"></script>
 <script src="js/angular-resource.min.js"></script>
+<script src="js/angular-cookies.min.js"></script>
+<script type="text/javascript" src="js/jquery-1.8.2.js"></script>
 <script src="js/app.js"></script>
 </head>
 <body>
 	<div class="container" ng-controller="TeamCtrl">
-		<div class="hero-unit text-center"><h2>My First Angular App</h2></div>
+		<div class="page-header">
+		    <h1>Angular / Django Example <small>An application to learn the technologies</small></h1>
+		</div>
+		<div class="row">
+			<div class="span8">
+				<div class="input-append">
+					<input  class="span2" type="text" ng-model="model.team" placeholder="Team Name">
+					<button class="btn btn-inverse" ng-click="getPlayers()">Get Players</button>
+				</div>
+				
+				<form name="newPlayerForm" ng-submit="addPlayer()" class="hero-unit">
+					<h2>Add a New Player</h2>
+					<div>
+						<label>Name</label>
+						<div>
+							<input type="text" placeholder="First Name" ng-model="player.first_name">
+							<input type="text" placeholder="Last Name" ng-model="player.last_name">
+						</div>
+					</div>
+					<div class="">
+						<label for="team">Team</label>
+						<div>
+							<select id="team" placeholder="Pick a Team" ng-model="player.team">
+								<option value="PENGUINS">Penguins</option>
+								<option value="PIRATES">Pirates</option>
+								<option value="STEELERS">Steelers</option>
+							</select>
+						</div>
+					</div>
 		
-		<input ng-model="model.team"  placeholder="Team Name" ></input>
-		<button class="btn btn-primary" ng-click="getPlayers()">Get Players</button>
-		
-		<form>
-		
-		</form>
-		<ul>
-			<li ng-repeat="player in model.players">
-				<p>{{player.fields.first_name}} {{player.fields.last_name}}</p>
-			</li>
-		</ul>
+					<button type="submit" class="btn btn-primary">Add Player</button>
+				</form>
+			</div>
+			<div class="span4">
+				<ul>
+					<li ng-repeat="player in model.players">
+						<p>{{player.fields.first_name}} {{player.fields.last_name}}</p>
+					</li>
+				</ul>
+			</div>
+		</div>
 	</div>
 </body>
 </html>
