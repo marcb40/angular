@@ -33,6 +33,7 @@ app.controller("TeamCtrl", function($scope, $filter, $http, $cookies, TeamData, 
 	
 	$scope.addPlayer = function() {
 		$scope.model.players = NewPlayer.save($scope.player, function(data){
+			$scope.model.team = $scope.player.team;
 			$scope.player = {};
 		});
 	}

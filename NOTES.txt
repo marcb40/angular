@@ -1,0 +1,86 @@
+This problem stumped me for a while and I finally found a solution [here|http://stackoverflow.com/questions/12190166/angularjs-any-way-for-http-post-to-send-request-parameters-instead-of-json/12191613#12191613]
+
+h2. The Problem
+
+I wanted to pass json data (a bound angularjs object) to django which would then automatically map it to a [ModelForm].&nbsp; In all of these attempts, the following code is used to initiate the post
+
+{code}
+Service.save($scope.data);
+{code}
+
+h3. Attempt #1
+
+In Django I had the very common code below to turn the request data into a [ModelForm] object to save
+
+{code}
+form = PersonForm(request.POST)
+{code}
+In Angular I set the Content-Type in the header within the module.config
+
+
+{code}
+$httpProvider.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded; charset=UTF-8';
+{code}
+
+The result was that the request.POST [QueryDict] object was populated but somewhere along the lines the json object that I sent was converted to a string and made a key in a wrapping json ojbect.&nbsp;
+
+\{'\{my_json_object\}', '\[\]'\}
+
+There didn't seem to be any easy way to get to this key and of course it would not map to the [ModelForm] as is.
+
+
+h3. Attempt #2 (Worked but with a hack in the Django code)
+
+I changed the Content-Type to json
+
+
+{code}
+$httpProvider.defaults.headers.post['Content-Type'] = 'application/json';
+{code}
+The data was sent, but the request.POST [QueryDict] was empty.&nbsp; The data was in the request.body, but when I tried to cast that to the [ModelForm], none of the data got populated
+
+When I cast the bytes in the request body to string then parsed it to a json object, it did work, but my unit test was behaving properly so it was still getting the data from the request.POST so I ended up with code like this
+
+{code}
+if (len(request.POST) > 0):
+
+    form = PersonForm(request.POST)
+
+else:
+
+     post_data = json.loads(request.body.decode('ascii'))
+
+     form = PersonForm(post_data)
+{code}
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+h3. Attempt #3 (Works with help from jQuery - This is the solution I went with)
+
+So this attempt takes our django code back to one line
+
+{code}
+form = PersonForm(request.POST)
+{code}
+
+The Content-Type goes back to
+
+
+{code}
+$httpProvider.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded; charset=UTF-8';
+{code}
+
+The one thing that we add is to convert the data to name-value pairs.&nbsp; This is easily done by using the jQuery function $.param()
+
+{code}
+app.config(function ($httpProvider) {
+     $httpProvider.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded; charset=UTF-8';
+     $httpProvider.defaults.transformRequest = function(data){
+          if (data === undefined) {
+               return data;
+          }
+          return $.param(data);
+    }
+});
+{code}
+so our data goes from *\{'name':'Bill', 'employer':'Celerity'\}* to *name=Bill&employer=Celerity*

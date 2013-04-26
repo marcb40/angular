@@ -49,11 +49,12 @@
 				</form>
 			</div>
 			<div class="span4">
-				<ul>
-					<li ng-repeat="player in model.players">
-						<p>{{player.fields.first_name}} {{player.fields.last_name}}</p>
-					</li>
-				</ul>
+				
+				<dl  class="dl-horizontal" ng-repeat="player in model.players">
+					<dt class="muted">{{player.fields.first_name}} {{player.fields.last_name}}</dt>
+					<dd class="muted">{{player.fields.team}}</dd>
+				</dl>
+				
 			</div>
 		</div>
 	</div>
