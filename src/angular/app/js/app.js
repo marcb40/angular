@@ -2,6 +2,8 @@ var app = angular.module("myApp", ['ngResource', 'ngCookies'])
 
 app.config(function ($httpProvider, $routeProvider) {
 	$httpProvider.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded; charset=UTF-8';
+	
+	//Transform the json objects to name value pairs (ex:  title=MyTitle&department=Development)  because this is what Django is expecting.
     $httpProvider.defaults.transformRequest = function(data){
         if (data === undefined) {
             return data;
@@ -9,6 +11,7 @@ app.config(function ($httpProvider, $routeProvider) {
         return $.param(data);
     }
     
+    //Define url routing
     $routeProvider.
     when('/', {templateUrl: 'templates/team.html',   controller: "TeamCtrl"}).
     when('/player/:playerId', {templateUrl: 'templates/player.html', controller: "PlayerCtrl"}).
@@ -16,44 +19,45 @@ app.config(function ($httpProvider, $routeProvider) {
 });
 
 
-
-app.factory('TeamData', function($resource){
+/**
+ * Team service
+ */
+app.factory('Team', function($resource){
 	return $resource('/main/team/:teamName', {}, {
 		query: {method:'GET', isArray:true}
 	})
 });
 
-app.factory('PlayerData', function($resource){
-	return $resource('/main/player/:playerId', {}, {
-		query: {method:'GET'}
-	})
-});
-
-app.factory('NewPlayer', function($resource, $cookies){
+/**
+ * Player service
+ */
+app.factory('Player', function($resource, $cookies){
 	var token = $cookies['csrftoken'];
-	return $resource('/main/player/add', {}, {
+	return $resource('/main/player/:playerId', {'playerId':0}, {
+		query: {method:'GET'},
 		save: {method:'POST', headers:{'X-CSRFToken' : token}, isArray:true}
 	})
 });
 
-app.controller("TeamCtrl", function($scope, $filter, TeamData, NewPlayer) {
-	$scope.model = {team:'Penguins', players:TeamData.query({teamName:$filter('uppercase')('Penguins')})};
+
+app.controller("TeamCtrl", function($scope, Team, Player) {
+	$scope.model = {team:'Penguins', players:Team.query({teamName:'Penguins'})};
 	$scope.player = {};
 	
 	$scope.getPlayers = function() {
-		 $scope.model.players = TeamData.query({teamName:$filter('uppercase')($scope.model.team)});
+		 $scope.model.players = Team.query({teamName:$scope.model.team});
 	}
 	
 	$scope.addPlayer = function() {
-		$scope.model.players = NewPlayer.save($scope.player, function(data){
+		$scope.model.players = Player.save($scope.player, function(data){
 			$scope.model.team = $scope.player.team;
 			$scope.player = {};
 		});
 	}
 });
 
-app.controller("PlayerCtrl", function($scope, $routeParams, PlayerData) {
-	$scope.model = {player:PlayerData.get({playerId:$routeParams.playerId})};
+app.controller("PlayerCtrl", function($scope, $routeParams, Player) {
+	$scope.model = {player:Player.get({playerId:$routeParams.playerId})};
 	
 });
 
