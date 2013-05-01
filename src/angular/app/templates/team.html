@@ -38,21 +38,8 @@
 					<a href="#/player/{{player.pk}}">
 						<dt>{{player.fields.first_name}} {{player.fields.last_name}}</dt>
 					</a>
-						<dd class="muted"><span id="team-pop" rel="popover" value="{{player.fields.team}}">{{player.fields.team}}</span></dd>
+						<dd class="muted"><span team-logo="{{player.fields.team}}">{{player.fields.team}}</span></dd>
 				</dl>
 				
 			</div>
 		</div>
-		<script type="text/javascript">
-			$(document).ready(function() {
-				$("#players").on('mouseenter mouseleave', 'span', function(event) {
-				     if (event.type == 'mouseenter') {
-				    	 var img = '<img src="img/' + $(this).val() + '.png" />';
-				    	 $(this ).popover({title:$(this).val(), content:img, html:true});
-				         $(this ).popover('show');
-				     } else  {
-				         $(this ).popover('hide');
-				     }
-				});
-			});
-		</script>	

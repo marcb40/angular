@@ -63,3 +63,34 @@ app.directive("home", function() {
 		template: "<a class='btn btn-inverse' href='#'>Home</div>"
 	}
 });
+
+/**
+ * This directive adds a popup to with the team logo.  This directive is much easier and cleaner than the 
+ * jquery alternative pasted below.  Because these elements are dynamic, jqueyr would have to attach them each time
+ * they are loaded, but this is not easy or not possible to do with jquery so we attach a listener to its parent object
+ * We are then forced to call the popover show and hide manually since we our listener is on the parent rather than just
+ * adding a trigger of hover directly to the element
+ * 
+ * With angular, this directive is called each time the element is created, so we have direct access to the element
+ * 
+ * <script type="text/javascript">
+ *			$(document).ready(function() {
+ *				$("#players").on('mouseenter mouseleave', 'span', function(event) {
+ *				     if (event.type == 'mouseenter') {
+ *				    	 var img = '<img src="img/' + $(this).val() + '.png" />';
+ *				    	 $(this ).popover({title:$(this).val(), content:img, html:true});
+ *				         $(this ).popover('show');
+ *				     } else  {
+ *				         $(this ).popover('hide');
+ *				     }
+ *				});
+ *			});
+ *	</script>	
+ */
+app.directive("teamLogo", function() {
+	return function (scope, element, attrs) {
+		var html = '<img src="img/' + attrs.teamLogo + '.png" />';
+		element.popover({trigger:'hover', title:attrs.teamLogo, content:html, html:true});
+	}
+});
+
