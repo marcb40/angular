@@ -1,0 +1,58 @@
+<div class="row">
+			<div class="span8">
+				<div class="input-append">
+					<input  class="span2" type="text" ng-model="model.team" placeholder="Team Name">
+					<button class="btn btn-inverse" ng-click="getPlayers()">Get Players</button>
+				</div>
+				
+				<form name="newPlayerForm" ng-submit="addPlayer()" class="hero-unit">
+					<h2>Add a New Player</h2>
+					<div>
+						<label>Name</label>
+						<div>
+							<input type="text" placeholder="First Name" ng-model="player.first_name" required>
+							<input type="text" placeholder="Last Name" ng-model="player.last_name" required>
+						</div>
+						<label>Number</label>
+						<div>
+							<input type="text" placeholder="Number" ng-model="player.number" required>
+						</div>
+					</div>
+					<div class="">
+						<label for="team">Team</label>
+						<div>
+							<select id="team" placeholder="Pick a Team" ng-model="player.team" required>
+								<option value="PENGUINS">Penguins</option>
+								<option value="PIRATES">Pirates</option>
+								<option value="STEELERS">Steelers</option>
+							</select>
+						</div>
+					</div>
+		
+					<button type="submit" class="btn btn-primary">Add Player</button>
+				</form>
+			</div>
+			<div id="players" class="span4">
+				
+				<dl  class="dl-horizontal" ng-repeat="player in model.players">
+					<a href="#/player/{{player.pk}}">
+						<dt>{{player.fields.first_name}} {{player.fields.last_name}}</dt>
+					</a>
+						<dd class="muted"><span id="team-pop" rel="popover" value="{{player.fields.team}}">{{player.fields.team}}</span></dd>
+				</dl>
+				
+			</div>
+		</div>
+		<script type="text/javascript">
+			$(document).ready(function() {
+				$("#players").on('mouseenter mouseleave', 'span', function(event) {
+				     if (event.type == 'mouseenter') {
+				    	 var img = '<img src="img/' + $(this).val() + '.png" />';
+				    	 $(this ).popover({title:$(this).val(), content:img, html:true});
+				         $(this ).popover('show');
+				     } else  {
+				         $(this ).popover('hide');
+				     }
+				});
+			});
+		</script>	
