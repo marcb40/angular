@@ -88,9 +88,28 @@ app.directive("home", function() {
  *	</script>	
  */
 app.directive("teamLogo", function() {
+	return { 
+		restrict: "E",
+		scope: {
+			team: "@"
+		},
+		template: "<span>{{team}}</span>",
+		link: function(scope, element, attrs) {
+			var html = '<img src="img/' + scope.team + '.png" />';
+			element.popover({trigger:'hover', title:scope.team, content:html, html:true});
+		}
+	}
+});
+
+/**
+ * Deprecated in favor of above element team logo (this one is used as an attribute)
+ */
+app.directive("teamLogo-deprecated", function() {
 	return function (scope, element, attrs) {
 		var html = '<img src="img/' + attrs.teamLogo + '.png" />';
 		element.popover({trigger:'hover', title:attrs.teamLogo, content:html, html:true});
 	}
 });
+
+
 
